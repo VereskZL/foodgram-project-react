@@ -1,7 +1,8 @@
 import django_filters
 from django_filters import rest_framework
-from food.models import Ingredients, Recipe, Tag
 from rest_framework.filters import SearchFilter
+
+from food.models import Ingredients, Recipe, Tag
 
 
 class IngredientFilter(SearchFilter):
@@ -18,7 +19,7 @@ class MyFilterSet(rest_framework.FilterSet):
         field_name='tags__slug',
         to_field_name='slug',
         queryset=Tag.objects.all()
-        )
+    )
     is_favorited = django_filters.NumberFilter(
         method='filter_is_favorited')
     is_in_shopping_cart = django_filters.NumberFilter(
