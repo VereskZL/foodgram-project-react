@@ -2,12 +2,11 @@ from django.db.utils import IntegrityError
 from django.shortcuts import get_object_or_404
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_extra_fields.fields import Base64ImageField
-from rest_framework import serializers
-from rest_framework.serializers import SerializerMethodField
-
-from users.models import Follow
 from food.models import (Favorite, Ingredients, IngredientToRecipe, Recipe,
                          ShoppingCart, Tag, User)
+from rest_framework import serializers
+from rest_framework.serializers import SerializerMethodField
+from users.models import Follow
 
 
 class UserRegistrationSerializer(UserCreateSerializer):
@@ -96,7 +95,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
     ingredients = IngredientToRecipeSerializer(
         many=True,
         source='ingredienttorecipe_set'
-        )
+    )
     image = Base64ImageField(required=False)
 
     class Meta:
@@ -131,7 +130,7 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({
                 u'ingredients': 'Что-то прошло не так,'
                 u'проверьте веденные данные'
-                })
+            })
         recipe.tags.set(tags_data)
         self.create_ingredients(recipe, ingredients)
         return recipe
@@ -141,10 +140,10 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
         for ingredient_data in ingredients:
             ingredient_obj = ingredient_data.get('ingredient')
             IngredientToRecipe.objects.create(
-                    ingredient=ingredient_obj,
-                    amount=ingredient_data.get('amount'),
-                    recipe=recipe,
-                )
+                ingredient=ingredient_obj,
+                amount=ingredient_data.get('amount'),
+                recipe=recipe,
+            )
 
     def update(self, instance, validated_data):
         instance.tags.clear()
@@ -160,7 +159,7 @@ class RecipeReadSerializer(serializers.ModelSerializer):
     ingredients = IngredientToRecipeSerializer(
         many=True,
         source='ingredienttorecipe_set'
-        )
+    )
     author = CustomUserSerializer(read_only=True)
     image = Base64ImageField()
     is_favorited = serializers.SerializerMethodField()
@@ -230,7 +229,7 @@ class FavoriteSerializer(ShortResipeSerializer):
         except IntegrityError:
             raise serializers.ValidationError({
                 'recipe': 'Рецепт уже в избраном'
-                })
+            })
         return recipe
 
 
@@ -286,7 +285,7 @@ class FollowSerializer(CustomUserSerializer):
         except IntegrityError:
             raise serializers.ValidationError({
                 'author': 'Вы уже подписаны на этого автора'
-                })
+            })
         return author
 
 
@@ -302,5 +301,5 @@ class ShoppingCartSerializer(ShortResipeSerializer):
         except IntegrityError:
             raise serializers.ValidationError({
                 'recipe': 'Рецепт уже в списке покупок'
-                })
+            })
         return recipe

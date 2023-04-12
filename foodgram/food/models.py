@@ -1,7 +1,7 @@
-from django.db import models
 from django.contrib.auth import get_user_model
-from django.db.models import UniqueConstraint
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.db import models
+from django.db.models import UniqueConstraint
 
 User = get_user_model()
 
@@ -12,14 +12,14 @@ class Tag(models.Model):
     name = models.CharField(
         max_length=64,
         verbose_name='Название тега'
-        )
+    )
     color = models.CharField(
         max_length=7,
         verbose_name='Цвет тега')
     slug = models.SlugField(
         verbose_name='Унигальный slug тега',
         unique=True
-        )
+    )
 
     def __str__(self):
         return self.name
@@ -36,13 +36,13 @@ class Ingredients(models.Model):
     name = models.CharField(
         max_length=64,
         verbose_name='Название ингидиента'
-        )
+    )
     measurement_unit = models.CharField(
         max_length=2,
         choices=METRIC,
         default=GR,
         verbose_name='единица изерения'
-        )
+    )
 
     def __str__(self):
         return self.name
