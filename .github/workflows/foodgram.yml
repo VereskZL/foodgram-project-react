@@ -46,11 +46,12 @@ jobs:
           push: true
           tags: zlveresk/foodgram:latest
       - name: Push frontend
-            uses: docker/build-push-action@v2
-            with:
-              context: frontend/
-              push: true
+        uses: docker/build-push-action@v2
+        with:
+          context: frontend/
+          push: true
           tags: zlveresk/fronend:latest
+
 
   deploy:
     runs-on: ubuntu-latest
