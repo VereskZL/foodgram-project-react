@@ -5,7 +5,7 @@ class AuthorOrAdmin(permissions.BasePermission):
     """
     Пользовательское разрешение, позволяющее просматривать всем,
     добавлять авторизизированным, а редактировать и удалять
-    объект авторам, модераторам и админам
+    объект авторам и админам
     """
 
     def has_permission(self, request, view):
@@ -18,6 +18,5 @@ class AuthorOrAdmin(permissions.BasePermission):
         return (
             request.method in permissions.SAFE_METHODS
             or request.user.is_admin
-            or request.user.is_moderator
             or obj.author == request.user
         )

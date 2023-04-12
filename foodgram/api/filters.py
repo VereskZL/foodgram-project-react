@@ -1,12 +1,10 @@
-from django_filters import rest_framework
-from rest_framework.filters import SearchFilter
 import django_filters
-
-from food.models import Recipe, Tag, Ingredients
+from django_filters import rest_framework
+from food.models import Ingredients, Recipe, Tag
+from rest_framework.filters import SearchFilter
 
 
 class IngredientFilter(SearchFilter):
-
     search_param = 'name'
 
     class Meta:
@@ -15,7 +13,6 @@ class IngredientFilter(SearchFilter):
 
 
 class MyFilterSet(rest_framework.FilterSet):
-
     author = rest_framework.NumberFilter(field_name='author__id')
     tags = django_filters.ModelMultipleChoiceFilter(
         field_name='tags__slug',
