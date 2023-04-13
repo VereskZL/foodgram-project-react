@@ -93,18 +93,9 @@ class Recipe(models.Model):
         verbose_name = ("Рецепты")
         constraints = [
             UniqueConstraint(
-                fields=('name', 'ingredients'),
-                name='unique_ingredient_to_recipe'
-            ),
-            UniqueConstraint(
                 fields=('name', 'author'),
                 name='unique_recipe_to_author'
             ),
-            UniqueConstraint(
-                fields=('tags', 'id'),
-                name='unique_name_to_recipe'
-            ),
-
         ]
 
     def __str__(self):
