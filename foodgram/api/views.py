@@ -3,22 +3,23 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
-from food.models import (Favorite, Ingredients, IngredientToRecipe, Recipe,
-                         ShoppingCart, Tag)
 from rest_framework import filters, mixins, serializers, status, viewsets
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view
 from rest_framework.permissions import (IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
-from users.models import Follow, User
 
+from users.models import Follow, User
 from .filters import IngredientFilter, MyFilterSet
 from .pagination import CustomPagination
 from .premissions import AuthorOrAdmin
 from .serializers import (CustomUserSerializer, FavoriteSerializer,
                           FollowSerializer, IngredientsSerializer,
                           RecipeCreateSerializer, RecipeReadSerializer,
-                          ShoppingCartSerializer, TagSerializer)
+                          ShoppingCartSerializer, TagSerializer,
+                          UserPasswordSerializer)
+from food.models import (Favorite, Ingredients, IngredientToRecipe, Recipe,
+                         ShoppingCart, Tag)
 
 
 class CustomUserViewSet(UserViewSet):
@@ -170,3 +171,20 @@ class ShoppingCartMixin(
             )
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@api_view(['post'])
+def set_password(request):
+    """Изменить пароль."""
+
+    serializer = UserPasswordSerializer(
+        data=request.data,
+        context={'request': request})
+    if serializer.is_valid():
+        serializer.save()
+        return Response(
+            {'message': 'Пароль изменен!'},
+            status=status.HTTP_201_CREATED)
+    return Response(
+        {'error': 'Введите верные данные!'},
+        status=status.HTTP_400_BAD_REQUEST)

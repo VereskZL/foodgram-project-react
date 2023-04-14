@@ -1,6 +1,8 @@
 from django.db.utils import IntegrityError
 from django.shortcuts import get_object_or_404
 from djoser.serializers import UserCreateSerializer, UserSerializer
+import django.contrib.auth.password_validation as validators
+from django.contrib.auth.hashers import make_password
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 from rest_framework.serializers import SerializerMethodField
@@ -46,6 +48,25 @@ class CustomUserSerializer(UserSerializer):
         request = self.context.get('request', None)
         current_user = request.user
         return obj.following.filter(user=current_user.id).exists()
+
+
+class UserPasswordSerializer(serializers.Serializer):
+    new_password = serializers.CharField(
+        label='Новый пароль')
+    current_password = serializers.CharField(
+        label='Текущий пароль')
+
+    def validate_new_password(self, new_password):
+        validators.validate_password(new_password)
+        return new_password
+
+    def create(self, validated_data):
+        user = self.context['request'].user
+        password = make_password(
+            validated_data.get('new_password'))
+        user.password = password
+        user.save()
+        return validated_data
 
 
 class TagSerializer(serializers.ModelSerializer):
