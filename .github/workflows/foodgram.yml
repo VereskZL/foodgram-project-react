@@ -42,15 +42,17 @@ jobs:
       - name: Push to Docker Hub
         uses: docker/build-push-action@v2
         with:
-          context: foodgram/
+          context: ./foodgram/
+          file: ./foodgram/Dockerfile
           push: true
-          tags: zlveresk/foodgram:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/foodgram:latest
       - name: Push frontend
         uses: docker/build-push-action@v2
         with:
-          context: frontend/
+          context: ./frontend/
+          file: ./frontend/Dockerfile
           push: true
-          tags: zlveresk/fronend:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/frontend:latest
 
 
   deploy:
@@ -78,4 +80,6 @@ jobs:
           echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
           echo DB_HOST=${{ secrets.DB_HOST }} >> .env
           echo DB_PORT=${{ secrets.DB_PORT }} >> .env
+          sudo docker pull ${{ secrets.DOCKER_USERNAME }}/frontend:latest
+          sudo docker pull ${{ secrets.DOCKER_USERNAME }}/backend:latest
           sudo docker-compose up -d
