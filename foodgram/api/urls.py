@@ -3,7 +3,7 @@ from rest_framework import routers
 
 from .views import (CustomUserViewSet, FavoriteMixin, FollowListMixin,
                     FollowMixin, IngredientMixin, RecipeWiewSet,
-                    ShoppingCartMixin, TagViewSet, set_password)
+                    ShoppingCartMixin, TagViewSet,)
 
 router_v1 = routers.DefaultRouter()
 router_v1.register('tags', TagViewSet)
@@ -29,11 +29,7 @@ router_v1.register('users/subscriptions',
 router_v1.register('users', CustomUserViewSet)
 
 urlpatterns = [
-    path(
-        'users/set_password/',
-        set_password,
-        name='set_password'),
-    path('auth/', include('djoser.urls.authtoken')),
-    path('', include('djoser.urls')),
     path('', include(router_v1.urls)),
+    path('', include('djoser.urls')),
+    path('auth/', include('djoser.urls.authtoken')),
 ]
