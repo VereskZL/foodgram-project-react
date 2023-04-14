@@ -27,22 +27,19 @@ class Tag(models.Model):
 
 class Ingredients(models.Model):
 
-    ML = 'ml'
-    GR = 'g'
-    METRIC = [
-        (ML, 'мл'),
-        (GR, 'г'),
-    ]
     name = models.CharField(
         max_length=64,
         verbose_name='Название ингидиента'
     )
     measurement_unit = models.CharField(
-        max_length=2,
-        choices=METRIC,
-        default=GR,
-        verbose_name='единица изерения'
+        verbose_name='Единица измерения',
+        max_length=32
     )
+
+    class Meta:
+        verbose_name = 'Ингредиент'
+        verbose_name_plural = 'Ингредиенты'
+        ordering = ('name',)
 
     def __str__(self):
         return self.name

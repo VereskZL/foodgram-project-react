@@ -1,9 +1,8 @@
 from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
-from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
-from rest_framework import filters, mixins, serializers, status, viewsets
+from rest_framework import mixins, serializers, status, viewsets
 from rest_framework.decorators import action, api_view
 from rest_framework.permissions import (IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
@@ -119,7 +118,6 @@ class IngredientMixin(viewsets.ReadOnlyModelViewSet):
 
     queryset = Ingredients.objects.all()
     serializer_class = IngredientsSerializer
-    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
     filter_backends = (IngredientFilter, )
     search_fields = ('^name', )
 
@@ -155,7 +153,7 @@ class ShoppingCartMixin(
     viewsets.GenericViewSet
 ):
 
-    permission_classes = IsAuthenticated
+    permission_classes = (IsAuthenticated, )
     queryset = Recipe.objects.all()
     serializer_class = ShoppingCartSerializer
 
