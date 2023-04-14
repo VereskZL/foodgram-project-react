@@ -81,5 +81,5 @@ jobs:
           echo DB_HOST=${{ secrets.DB_HOST }} >> .env
           echo DB_PORT=${{ secrets.DB_PORT }} >> .env
           sudo docker pull ${{ secrets.DOCKER_USERNAME }}/frontend:latest
-          sudo docker pull ${{ secrets.DOCKER_USERNAME }}/backend:latest
+          sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram:latest
           sudo docker-compose up -d
