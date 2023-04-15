@@ -38,7 +38,7 @@ services:
     depends_on:
       - db
     env_file:
-      - .env
+      - ./.env
 
 volumes:
   static_value:
