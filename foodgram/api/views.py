@@ -10,7 +10,7 @@ from rest_framework.permissions import (IsAuthenticated,
 from rest_framework.response import Response
 
 from users.models import Follow, User
-from .filters import IngredientFilter, MyFilterSet
+from .filters import MyFilterSet
 from .pagination import CustomPagination
 from .premissions import AuthorOrAdmin
 from .serializers import (CustomUserSerializer, FavoriteSerializer,
