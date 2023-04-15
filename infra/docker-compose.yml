@@ -21,6 +21,7 @@ services:
       - media_value:/var/html/media/
     depends_on:
       - backend
+      - frontend
 
   db:
     image: postgres:13.0-alpine
