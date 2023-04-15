@@ -1,8 +1,6 @@
 from django.db.utils import IntegrityError
 from django.shortcuts import get_object_or_404
 from djoser.serializers import UserCreateSerializer, UserSerializer
-import django.contrib.auth.password_validation as validators
-from django.contrib.auth.hashers import make_password
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 from rest_framework.serializers import SerializerMethodField
@@ -49,25 +47,6 @@ class CustomUserSerializer(UserSerializer):
         return Follow.objects.filter(
             user=user.id,
             author=obj.id).exists()
-
-
-class UserPasswordSerializer(serializers.Serializer):
-    new_password = serializers.CharField(
-        label='Новый пароль')
-    current_password = serializers.CharField(
-        label='Текущий пароль')
-
-    def validate_new_password(self, new_password):
-        validators.validate_password(new_password)
-        return new_password
-
-    def create(self, validated_data):
-        user = self.context['request'].user
-        password = make_password(
-            validated_data.get('new_password'))
-        user.password = password
-        user.save()
-        return validated_data
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -168,14 +147,36 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
                 recipe=recipe,
             )
 
+   # def update(self, instance, validated_data):
+   #     instance.tags.clear()
+   #     IngredientToRecipe.objects.filter(recipe=instance).delete()
+   #     instance.tags.set(validated_data.pop('tags'))
+   #     ingredients = validated_data.pop('ingredienttorecipe_set')
+   #     self.create_ingredients(instance, ingredients)
+   #     return super().update(instance, validated_data)
     def update(self, instance, validated_data):
-        instance.tags.clear()
-        IngredientToRecipe.objects.filter(recipe=instance).delete()
-        instance.tags.set(validated_data.pop('tags'))
-        ingredients = validated_data.pop('ingredienttorecipe_set')
-        self.create_ingredients(instance, ingredients)
-        return super().update(instance, validated_data)
+        instance.name = validated_data.get('name', instance.name)
+        instance.text = validated_data.get('text', instance.text)
+        instance.cooking_time = validated_data.get('cooking_time',
+                                                   instance.cooking_time)
+        instance.image = validated_data.get('image', instance.image)
+        if 'tags' in validated_data:
+            tags_data = validated_data.pop('tags')
+            instance.tags.set(tags_data)
 
+        if 'ingredienttorecipe_set' in validated_data:
+            instance.ingredient_recipe.all().delete()
+            ingredients_data = validated_data.pop('ingredienttorecipe_set')
+            for ingedient in ingredients_data:
+                ingedient_instance = ingedient['ingredient']['id']
+                ingredient_amount = ingedient['amount']
+                IngredientToRecipe.objects.create(
+                    recipe=instance,
+                    ingredient=ingedient_instance,
+                    amount=ingredient_amount
+                )
+        instance.save()
+        return instance
 
 class RecipeReadSerializer(serializers.ModelSerializer):
     tags = serializers.SerializerMethodField()

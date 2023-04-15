@@ -2,22 +2,22 @@ from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
+from rest_framework import filters
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import mixins, serializers, status, viewsets
-from rest_framework.decorators import action, api_view
+from rest_framework.decorators import action
 from rest_framework.permissions import (IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
 
 from users.models import Follow, User
-from .filters import MyFilterSet
+from .filters import MyFilterSet, IngredientFilter
 from .pagination import CustomPagination
 from .premissions import AuthorOrAdmin
 from .serializers import (CustomUserSerializer, FavoriteSerializer,
                           FollowSerializer, IngredientsSerializer,
                           RecipeCreateSerializer, RecipeReadSerializer,
-                          ShoppingCartSerializer, TagSerializer,
-                          UserPasswordSerializer)
+                          ShoppingCartSerializer, TagSerializer)
 from food.models import (Favorite, Ingredients, IngredientToRecipe, Recipe,
                          ShoppingCart, Tag)
 
@@ -122,6 +122,8 @@ class IngredientMixin(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredients.objects.all()
     serializer_class = IngredientsSerializer
     pagination_class = None
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter)
+    filter_backends = (IngredientFilter, )
     search_fields = ('^name', )
 
 
@@ -172,20 +174,3 @@ class ShoppingCartMixin(
             )
         self.perform_destroy(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-@api_view(['post'])
-def set_password(request):
-    """Изменить пароль."""
-
-    serializer = UserPasswordSerializer(
-        data=request.data,
-        context={'request': request})
-    if serializer.is_valid():
-        serializer.save()
-        return Response(
-            {'message': 'Пароль изменен!'},
-            status=status.HTTP_201_CREATED)
-    return Response(
-        {'error': 'Введите верные данные!'},
-        status=status.HTTP_400_BAD_REQUEST)
