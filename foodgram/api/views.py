@@ -2,6 +2,7 @@ from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import mixins, serializers, status, viewsets
 from rest_framework.decorators import action, api_view
 from rest_framework.permissions import (IsAuthenticated,
@@ -69,6 +70,7 @@ class RecipeWiewSet(viewsets.ModelViewSet):
 
     queryset = Recipe.objects.all()
     serializer_class = RecipeCreateSerializer
+    filter_backends = (DjangoFilterBackend,)
     filter_class = MyFilterSet
     pagination_class = CustomPagination
     permission_classes = AuthorOrAdmin,
@@ -112,13 +114,14 @@ class TagViewSet(
 
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
+    pagination_class = None
 
 
 class IngredientMixin(viewsets.ReadOnlyModelViewSet):
 
     queryset = Ingredients.objects.all()
     serializer_class = IngredientsSerializer
-    filter_backends = (IngredientFilter, )
+    pagination_class = None
     search_fields = ('^name', )
 
 

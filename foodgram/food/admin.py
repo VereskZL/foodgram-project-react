@@ -1,8 +1,44 @@
 from django.contrib import admin
 
-from .models import Ingredients, IngredientToRecipe, Recipe, Tag
+from . import models
 
-admin.site.register(Recipe)
-admin.site.register(Tag)
-admin.site.register(Ingredients)
-admin.site.register(IngredientToRecipe)
+
+@admin.register(models.Tag)
+class TagAdmin(admin.ModelAdmin):
+    list_display = ('name', 'color', 'slug')
+    search_fields = ('name', 'slug')
+    list_filter = ('name', 'slug')
+
+
+@admin.register(models.Ingredients)
+class IngredientAdmin(admin.ModelAdmin):
+    list_display = ('name', 'measurement_unit')
+    search_fields = ('name',)
+    list_filter = ('name',)
+
+
+class IngredientToRecipeInLine(admin.TabularInline):
+    model = models.IngredientToRecipe
+    min_num = 1
+
+
+@admin.register(models.Recipe)
+class RecipeAdmin(admin.ModelAdmin):
+    list_display = ('author', 'name',)
+    search_fields = ('name',)
+    list_filter = ('author', 'name', 'tags')
+    inlines = (IngredientToRecipeInLine,)
+
+
+@admin.register(models.Favorite)
+class Favorite(admin.ModelAdmin):
+    list_display = ('user', 'recipe')
+    search_fields = ('user', 'recipe')
+    list_filter = ('user', 'recipe')
+
+
+@admin.register(models.ShoppingCart)
+class ShoppingCart(admin.ModelAdmin):
+    list_display = ('user', 'recipe')
+    search_fields = ('user', 'recipe')
+    list_filter = ('user', 'recipe')
