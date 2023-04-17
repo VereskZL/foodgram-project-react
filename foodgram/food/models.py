@@ -94,6 +94,7 @@ class Recipe(models.Model):
                 name='unique_recipe_to_author'
             ),
         ]
+        ordering = ['-pub_date']
 
     def __str__(self):
         return self.name

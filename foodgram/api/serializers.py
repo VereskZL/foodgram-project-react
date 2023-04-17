@@ -44,9 +44,7 @@ class CustomUserSerializer(UserSerializer):
 
     def get_is_subscribed(self, obj):
         user = self.context['request'].user
-        return Follow.objects.filter(
-            user=user.id,
-            author=obj.id).exists()
+        return user.follower.filter(author=obj).exists()
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -148,28 +146,12 @@ class RecipeCreateSerializer(serializers.ModelSerializer):
             )
 
     def update(self, instance, validated_data):
-        instance.name = validated_data.get('name', instance.name)
-        instance.text = validated_data.get('text', instance.text)
-        instance.cooking_time = validated_data.get('cooking_time',
-                                                   instance.cooking_time)
-        instance.image = validated_data.get('image', instance.image)
-        if 'tags' in validated_data:
-            tags_data = validated_data.pop('tags')
-            instance.tags.set(tags_data)
-
-        if 'ingredienttorecipe_set' in validated_data:
-            instance.ingredient_recipe.all().delete()
-            ingredients_data = validated_data.pop('ingredienttorecipe_set')
-            for ingedient in ingredients_data:
-                ingedient_instance = ingedient['ingredient']['id']
-                ingredient_amount = ingedient['amount']
-                IngredientToRecipe.objects.create(
-                    recipe=instance,
-                    ingredient=ingedient_instance,
-                    amount=ingredient_amount
-                )
-        instance.save()
-        return instance
+        instance.tags.clear()
+        IngredientToRecipe.objects.filter(recipe=instance).delete()
+        instance.tags.set(validated_data.pop('tags'))
+        ingredients = validated_data.pop('ingredienttorecipe_set')
+        self.create_ingredients(instance, ingredients)
+        return super().update(instance, validated_data)
 
 
 class RecipeReadSerializer(serializers.ModelSerializer):
@@ -280,12 +262,8 @@ class FollowSerializer(CustomUserSerializer):
     def get_recipes(self, obj):
         request = self.context.get('request')
         limit = request.GET.get('recipes_limit')
-        if limit:
-            queryset = Recipe.objects.filter(
-                author=obj).order_by('-id')[:int(limit)]
-        else:
-            queryset = Recipe.objects.filter(author=obj)
-
+        queryset = Recipe.objects.filter(
+            author=obj).order_by('-id')[:int(limit)]
         return ShortResipeSerializer(queryset, many=True).data
 
     def get_recipes_count(self, obj):

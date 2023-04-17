@@ -31,7 +31,7 @@ class CustomUserViewSet(UserViewSet):
         return User.objects.all()
 
 
-class FollowListMixin(mixins.ListModelMixin, viewsets.GenericViewSet):
+class FollowListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
 
     serializer_class = FollowSerializer
     pagination_class = CustomPagination
@@ -41,7 +41,7 @@ class FollowListMixin(mixins.ListModelMixin, viewsets.GenericViewSet):
         return User.objects.filter(following__user=self.request.user)
 
 
-class FollowMixin(
+class FollowViewSet(
     mixins.CreateModelMixin,
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet
@@ -65,7 +65,7 @@ class FollowMixin(
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class RecipeWiewSet(viewsets.ModelViewSet):
+class RecipeViewSet(viewsets.ModelViewSet):
 
     queryset = Recipe.objects.all()
     serializer_class = RecipeCreateSerializer
@@ -116,7 +116,7 @@ class TagViewSet(
     pagination_class = None
 
 
-class IngredientMixin(viewsets.ReadOnlyModelViewSet):
+class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = Ingredients.objects.all()
     serializer_class = IngredientsSerializer
@@ -126,7 +126,7 @@ class IngredientMixin(viewsets.ReadOnlyModelViewSet):
     search_fields = ('^name', )
 
 
-class FavoriteMixin(
+class FavoriteViewSet(
     mixins.DestroyModelMixin,
     mixins.CreateModelMixin,
     viewsets.GenericViewSet
