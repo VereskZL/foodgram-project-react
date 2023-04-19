@@ -2,11 +2,10 @@ from django.db.utils import IntegrityError
 from django.shortcuts import get_object_or_404
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from drf_extra_fields.fields import Base64ImageField
-from rest_framework import serializers
-from rest_framework.serializers import SerializerMethodField
-
 from food.models import (Favorite, Ingredients, IngredientToRecipe, Recipe,
                          ShoppingCart, Tag, User)
+from rest_framework import serializers
+from rest_framework.serializers import SerializerMethodField
 from users.models import Follow
 
 
