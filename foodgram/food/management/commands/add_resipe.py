@@ -3,7 +3,6 @@ import os
 
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
-
 from food.models import Ingredients
 
 DATA_ROOT = os.path.join(settings.BASE_DIR, 'data')
