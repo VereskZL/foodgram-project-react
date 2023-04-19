@@ -1,7 +1,8 @@
 from django_filters import (ModelMultipleChoiceFilter, NumberFilter,
                             rest_framework)
-from food.models import Ingredients, Recipe, Tag
 from rest_framework.filters import SearchFilter
+
+from food.models import Ingredients, Recipe, Tag
 
 
 class IngredientFilter(SearchFilter):

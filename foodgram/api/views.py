@@ -3,18 +3,19 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
-from food.models import (Favorite, Ingredients, IngredientToRecipe, Recipe,
-                         ShoppingCart, Tag)
 from rest_framework import filters, mixins, serializers, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import (IsAuthenticated,
                                         IsAuthenticatedOrReadOnly)
 from rest_framework.response import Response
+
+from food.models import (Favorite, Ingredients, IngredientToRecipe, Recipe,
+                         ShoppingCart, Tag)
 from users.models import Follow, User
 
 from .filters import IngredientFilter, MyFilterSet
 from .pagination import CustomPagination
-from .premissions import AuthorOrAdmin
+from .premissions import AuthorOrReadOnly
 from .serializers import (CustomUserSerializer, FavoriteSerializer,
                           FollowSerializer, IngredientsSerializer,
                           RecipeCreateSerializer, RecipeReadSerializer,
@@ -22,7 +23,6 @@ from .serializers import (CustomUserSerializer, FavoriteSerializer,
 
 
 class CustomUserViewSet(UserViewSet):
-
     permission_classes = (IsAuthenticatedOrReadOnly,)
     pagination_class = CustomPagination
     serializer_class = CustomUserSerializer
@@ -32,7 +32,6 @@ class CustomUserViewSet(UserViewSet):
 
 
 class FollowListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
-
     serializer_class = FollowSerializer
     pagination_class = CustomPagination
     permission_classes = (IsAuthenticated,)
@@ -46,7 +45,6 @@ class FollowViewSet(
     mixins.DestroyModelMixin,
     viewsets.GenericViewSet
 ):
-
     serializer_class = FollowSerializer
     queryset = User.objects.all()
 
@@ -66,14 +64,12 @@ class FollowViewSet(
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
-
     queryset = Recipe.objects.all()
     serializer_class = RecipeCreateSerializer
     filter_backends = (DjangoFilterBackend,)
     filter_class = MyFilterSet
     pagination_class = CustomPagination
-    permission_classes = AuthorOrAdmin,
-    ordering = ['-pub_date']
+    permission_classes = (AuthorOrReadOnly, )
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
@@ -110,14 +106,12 @@ class TagViewSet(
     mixins.RetrieveModelMixin,
     viewsets.GenericViewSet
 ):
-
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     pagination_class = None
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
-
     queryset = Ingredients.objects.all()
     serializer_class = IngredientsSerializer
     pagination_class = None
@@ -131,7 +125,6 @@ class FavoriteViewSet(
     mixins.CreateModelMixin,
     viewsets.GenericViewSet
 ):
-
     queryset = Recipe.objects.all()
     serializer_class = FavoriteSerializer
     permission_classes = (IsAuthenticated,)
@@ -156,7 +149,6 @@ class ShoppingCartMixin(
     mixins.CreateModelMixin,
     viewsets.GenericViewSet
 ):
-
     permission_classes = (IsAuthenticated, )
     queryset = Recipe.objects.all()
     serializer_class = ShoppingCartSerializer

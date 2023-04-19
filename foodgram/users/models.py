@@ -1,5 +1,5 @@
-from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.db import models
 from django.db.models import F, Q, UniqueConstraint
 
 
@@ -28,7 +28,6 @@ class User(AbstractUser):
 
 
 class Follow(models.Model):
-
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
